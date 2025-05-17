@@ -1,0 +1,21 @@
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["multiSchema"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+  schemas  = ["audit"]
+}
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  userId    String?
+  service   String
+  event     String
+  createdAt DateTime @default(now())
+  metadata  Json
+
+  @@schema("audit")
+}
