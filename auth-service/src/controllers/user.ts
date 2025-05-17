@@ -1,5 +1,5 @@
 import jwt from "jsonwebtoken";
-import redis, { publishAuditEvent } from "../lib/redisClient";
+import { publishAuditEvent } from "../lib/redisClient";
 import { createUser, findUserByEmail } from "../models/user";
 import { comparePassword, hashPassword } from "../utils/hash";
 
@@ -17,15 +17,13 @@ export const registerUser = async (req: any, res: any) => {
     console.log("🚀 ~ registerUser ~ newUser:", newUser)
 
     await publishAuditEvent({
-      eventType: "USER_REGISTERED",
+      event: "USER_REGISTERED",
       timestamp: new Date().toISOString(),
       userId: newUser.id,
       metadata: {
         email: newUser.email,
       },
     });
-
-    await redis.publish("audit_log", JSON.stringify(event));
 
     res.status(201).json(newUser);
   } catch (err) {
@@ -48,7 +46,7 @@ export const login = async (req: any, res: any) => {
     });
 
     await publishAuditEvent({
-      eventType: "USER_LOGGED_IN",
+      event: "USER_LOGGED_IN",
       timestamp: new Date().toISOString(),
       userId: user.id,
       metadata: {
